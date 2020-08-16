@@ -371,7 +371,64 @@ query {
 
 16. Working with Arrays: Part I
     11분
+```JS
+// index.js
 
+import {
+    GraphQLServer
+} from 'graphql-yoga'
+
+// Scalar types - String, Boolean, Int, Float, ID
+
+// Type definitions (schema)
+const typeDefs = `
+    type Query {
+        add(numbers: [Float!]!): Float!
+        greeting(name: String, position: String): String!
+        grades: [Int!]!
+        me: User!
+        post: Post!
+    }
+
+`
+
+// Resolvers
+const resolvers = {
+    Query: {
+        add(parent, args, ctx, info) { 
+            if (args.numbers.length === 0) {
+                return 0
+            }
+
+            // [1,5,10,2]
+            return args.numbers.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue
+            })
+        },
+        grades(parent, args, ctx, info) {
+            return [99, 80, 93]
+        }
+    }
+}
+
+const server = new GraphQLServer({
+    typeDefs,
+    resolvers
+})
+
+server.start(() => {
+    console.log('The server is up!')
+})
+```
+- Try on graphql playground
+
+```graphql
+# Write your query or mutation here
+query {
+  add(numbers: [1,5,10,2])
+  grades
+}
+```
 17. Working with Arrays: Part II
     22분
 

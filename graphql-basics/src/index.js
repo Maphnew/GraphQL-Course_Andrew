@@ -7,8 +7,9 @@ import {
 // Type definitions (schema)
 const typeDefs = `
     type Query {
-        add(a: Float, b: Float): Float!
+        add(numbers: [Float!]!): Float!
         greeting(name: String, position: String): String!
+        grades: [Int!]!
         me: User!
         post: Post!
     }
@@ -31,13 +32,15 @@ const typeDefs = `
 // Resolvers
 const resolvers = {
     Query: {
-        add(parent, args, ctx, info) {
-            console.log(args)
-            if (args.a && args.b) {
-                return args.a+args.b
-            } else {
-                return 'Try again'
+        add(parent, args, ctx, info) { 
+            if (args.numbers.length === 0) {
+                return 0
             }
+
+            // [1,5,10,2]
+            return args.numbers.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue
+            })
         },
         greeting(parent, args, ctx, info) {
             if (args.name && args.position) {
@@ -45,6 +48,9 @@ const resolvers = {
             } else {
                 return 'Hello!'
             }
+        },
+        grades(parent, args, ctx, info) {
+            return [99, 80, 93]
         },
         me() {
             return {
