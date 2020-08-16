@@ -84,6 +84,58 @@ Hello GraphQL
 11. Creating Your Own GraphQL API
     18분
 
+- Install graphql-yoga for nodeJS implement
+
+```shell
+# npm i graphql-yoga@1.16.7
+```
+
+- Build Type definitions (schema) And Resolvers
+- How to Run Server
+
+```javascript
+import { GraphQLServer } from "graphql-yoga";
+
+// Type definitions (schema)
+const typeDefs = `
+    type Query {
+        hello: String!
+        name: String!
+        location: String!
+        bio: String!
+    }
+`;
+
+// Resolvers
+const resolvers = {
+  Query: {
+    hello() {
+      return "This is my first query!";
+    },
+    name() {
+      return "Maphnew Kim";
+    },
+    location() {
+      return "Ulsan, Korea";
+    },
+    bio() {
+      return "What?";
+    },
+  },
+};
+
+const server = new GraphQLServer({
+  typeDefs,
+  resolvers,
+});
+
+server.start(() => {
+  console.log("The server is up!");
+});
+```
+
+- Go to http://localhost:4000
+
 12. GraphQL Scalar Types
     13분
 
