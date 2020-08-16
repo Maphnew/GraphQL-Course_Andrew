@@ -7,51 +7,43 @@ import {
 // Type definitions (schema)
 const typeDefs = `
     type Query {
+        me: User!
+        post: Post!
+    }
+
+    type User {
         id: ID!
         name: String!
-        age: Int!
-        employed: Boolean!
-        gpa: Float
+        email: String!
+        age: Int
+    }
+
+    type Post {
+        id: ID!
         title: String!
-        price: Float!
-        releaseYear: Int
-        rating: Float
-        isStock: Boolean!
+        body: String!
+        published: Boolean!
     }
 `
 
 // Resolvers
 const resolvers = {
     Query: {
-        id() {
-            return 'abc123'
+        me() {
+            return {
+                id:'1239884',
+                name: 'Mike',
+                email: 'mike@example.com',
+                age: 35
+            }
         },
-        name() {
-            return 'Maphnew'
-        },
-        age() {
-            return 35
-        },
-        employed() {
-            return true
-        },
-        gpa() {
-            return 1.1
-        },
-        title() {
-            return 'Something'
-        },
-        price() {
-            return 15.20
-        },
-        releaseYear() {
-            return 2005
-        },
-        rating() {
-            return 4.5
-        },
-        isStock() {
-            return true
+        post() {
+            return {
+                id: '1234124',
+                title: 'Some title',
+                body: 'This is post',
+                published: true
+            }
         }
     }
 }
