@@ -4,12 +4,48 @@ import {
 
 // Scalar types - String, Boolean, Int, Float, ID
 
+// Demo post data
+const posts = [{
+    id: '1',
+    title: 'GraphQL 101',
+    body: 'Hi, There!',
+    published: true,
+    author: '10'
+}, {
+    id: '2',
+    title: 'GraphQL 201',
+    body: 'Good day, mate!',
+    published: true,
+    author: '10'
+}, {
+    id: '3',
+    title: 'Where is the cookie?',
+    body: 'Oh my zsh!',
+    published: false,
+    author: '20'
+}]
+
+// Demo user data
+const users = [{
+    id: '10',
+    name: 'Maph',
+    email: 'maph@example.com',
+    age: 19
+},{
+    id: '20',
+    name: 'Sarah',
+    email: 'sarah@example.com'
+},{
+    id: '30',
+    name: 'Mike',
+    email: 'mike@example.com'
+}]
+
 // Type definitions (schema)
 const typeDefs = `
     type Query {
-        add(numbers: [Float!]!): Float!
-        greeting(name: String, position: String): String!
-        grades: [Int!]!
+        users(query: String): [User!]!
+        posts(query: String): [Post!]!
         me: User!
         post: Post!
     }
@@ -26,31 +62,32 @@ const typeDefs = `
         title: String!
         body: String!
         published: Boolean!
+        author: User!
     }
 `
 
 // Resolvers
 const resolvers = {
     Query: {
-        add(parent, args, ctx, info) { 
-            if (args.numbers.length === 0) {
-                return 0
+        users(parent, args, ctx, info) {
+            if (!args.query) {
+                return users
             }
 
-            // [1,5,10,2]
-            return args.numbers.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue
+            return users.filter((user) => {
+                return user.name.toLowerCase().includes(args.query.toLowerCase())
             })
         },
-        greeting(parent, args, ctx, info) {
-            if (args.name && args.position) {
-                return `Hello, ${args.name}! You are my favorite ${args.position}`
-            } else {
-                return 'Hello!'
+        posts(parent, args, ctx, info) {
+            if (!args.query) {
+                return posts
             }
-        },
-        grades(parent, args, ctx, info) {
-            return [99, 80, 93]
+
+            return posts.filter((post) => {
+                const isTitleMatch = post.title.toLowerCase().includes(args.query.toLowerCase())
+                const isBodyMatch = post.body.toLowerCase().includes(args.query.toLowerCase())
+                return isTitleMatch || isBodyMatch
+            })
         },
         me() {
             return {
@@ -67,6 +104,13 @@ const resolvers = {
                 body: 'This is post',
                 published: true
             }
+        }
+    },
+    Post: {
+        author(parent, args, ctx, info) {
+            return users.find((user) => {
+                return user.id === parent.author
+            })
         }
     }
 }
