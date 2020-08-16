@@ -216,6 +216,34 @@ server.start(() => {
 13. Live Reload for GraphQL-Yoga
     5분
 
+- install nodemon
+- modify scipts 'nodemon src/index.js --exec babel-node'
+```json
+// package.json
+{
+  "name": "graphql-basics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js --exec babel-node",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "graphql-yoga": "^1.16.7"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  }
+}
+
+```
+
 14. Creating Custom Types
     15분
 
