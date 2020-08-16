@@ -314,6 +314,61 @@ server.start(() => {
 15. Operation Arguments
     14분
 
+```JS
+// index.js
+import {
+    GraphQLServer
+} from 'graphql-yoga'
+
+// Type definitions (schema)
+const typeDefs = `
+    type Query {
+        add(a: Float, b: Float): Float!
+        greeting(name: String, position: String): String!
+        me: User!
+        post: Post!
+    }
+`
+
+// Resolvers
+const resolvers = {
+    Query: {
+        add(parent, args, ctx, info) {
+            console.log(args)
+            if (args.a && args.b) {
+                return args.a+args.b
+            } else {
+                return 'Try again'
+            }
+        },
+        greeting(parent, args, ctx, info) {
+            if (args.name && args.position) {
+                return `Hello, ${args.name}! You are my favorite ${args.position}`
+            } else {
+                return 'Hello!'
+            }
+        }
+    }
+}
+
+const server = new GraphQLServer({
+    typeDefs,
+    resolvers
+})
+
+server.start(() => {
+    console.log('The server is up!')
+})
+```
+- Try on graphql playground
+
+```graphql
+query {
+  add(a: 1.2, b: 2.3)
+  greeting(name: "Jess", position: "teacher")
+}
+```
+
 16. Working with Arrays: Part I
     11분
 
