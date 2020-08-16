@@ -11,12 +11,12 @@ const typeDefs = `
         name: String!
         age: Int!
         employed: Boolean!
-        gpa: Float,
+        gpa: Float
         title: String!
         price: Float!
         releaseYear: Int
         rating: Float
-        inStock: Boolean!
+        isStock: Boolean!
     }
 `
 
@@ -36,7 +36,7 @@ const resolvers = {
             return true
         },
         gpa() {
-            return null
+            return 1.1
         },
         title() {
             return 'Something'
@@ -45,12 +45,12 @@ const resolvers = {
             return 15.20
         },
         releaseYear() {
-            return 2019
+            return 2005
         },
         rating() {
             return 4.5
         },
-        inStock() {
+        isStock() {
             return true
         }
     }
