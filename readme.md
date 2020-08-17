@@ -900,10 +900,144 @@ query {
     Mutations
     1분
 
-24. Creating Data with Mutations: Part
-    I
+24. Creating Data with Mutations: Part I
     18분
 
+- install and import uuid/v4
+- Create Mutation Type definitions (schema)
+- Create Resolver Mutaion and createUser()
+
+```JS
+// index.js
+import {
+    GraphQLServer
+} from 'graphql-yoga'
+import uuidv4 from 'uuid/v4'
+
+// Scalar types - String, Boolean, Int, Float, ID
+
+// Demo post data
+const posts = [{
+    id: '1',
+    title: 'GraphQL 101',
+    body: 'Hi, There!',
+    published: true,
+    author: '10'
+}, {
+    id: '2',
+    title: 'GraphQL 201',
+    body: 'Good day, mate!',
+    published: true,
+    author: '10'
+}, {
+    id: '3',
+    title: 'Where is the cookie?',
+    body: 'Oh my zsh!',
+    published: false,
+    author: '20'
+}]
+
+// Demo user data
+const users = [{
+    id: '10',
+    name: 'Maph',
+    email: 'maph@example.com',
+    age: 19
+},{
+    id: '20',
+    name: 'Sarah',
+    email: 'sarah@example.com'
+},{
+    id: '30',
+    name: 'Mike',
+    email: 'mike@example.com'
+}]
+
+const comments =[{
+    id: '101',
+    text: 'A Comment!',
+    author: '10',
+    post: '1'
+},{
+    id: '102',
+    text: 'B Comment~!',
+    author: '20',
+    post: '2'
+},{
+    id: '103',
+    text: 'C Comment!!!',
+    author: '30',
+    post: '3'
+},{
+    id: '104',
+    text: 'D Comment....',
+    author: '20',
+    post: '1'
+}]
+
+// Type definitions (schema)
+const typeDefs = `
+// ...
+    type Mutation {
+        createUser(name: String!, email: String!, age: Int): User!
+    }
+
+    type User {
+        id: ID!
+        name: String!
+        email: String!
+        age: Int
+        posts: [Post!]!
+        comments: [Comment!]!
+    }
+// ...
+`
+
+// Resolvers
+const resolvers = {
+// ...
+    Mutation: {
+        createUser(parent, args, ctx, info) {
+            const emailTaken = users.some((user) => user.email === args.email);
+
+            if (emailTaken) {
+                throw new Error('Email taken.')
+            }
+
+            const user = {
+                id: uuidv4(),
+                name: args.name,
+                email: args.email,
+                age: args.age
+            }
+
+            users.push(user)
+
+            return user
+        }
+    }
+}
+
+const server = new GraphQLServer({
+    typeDefs,
+    resolvers
+})
+
+server.start(() => {
+    console.log('The server is up!')
+})
+```
+- Try on graphql playground
+```graphql
+mutation {
+  createUser(name: "Maphnew", email: "goodguy@example.com", age: 20) {
+    id
+    name
+    email
+    age
+  }
+}
+```
 25. Creating Data with Mutations: Part
     II
     20분
