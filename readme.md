@@ -218,6 +218,7 @@ server.start(() => {
 
 - install nodemon
 - modify scipts 'nodemon src/index.js --exec babel-node'
+
 ```json
 // package.json
 {
@@ -241,11 +242,11 @@ server.start(() => {
     "nodemon": "^1.19.4"
   }
 }
-
 ```
 
 14. Creating Custom Types
     15분
+
 - Create User And Poster
 
 ```JS
@@ -360,6 +361,7 @@ server.start(() => {
     console.log('The server is up!')
 })
 ```
+
 - Try on graphql playground
 
 ```graphql
@@ -371,6 +373,7 @@ query {
 
 16. Working with Arrays: Part I
     11분
+
 ```JS
 // index.js
 
@@ -395,7 +398,7 @@ const typeDefs = `
 // Resolvers
 const resolvers = {
     Query: {
-        add(parent, args, ctx, info) { 
+        add(parent, args, ctx, info) {
             if (args.numbers.length === 0) {
                 return 0
             }
@@ -420,61 +423,69 @@ server.start(() => {
     console.log('The server is up!')
 })
 ```
+
 - Try on graphql playground
 
 ```graphql
 # Write your query or mutation here
 query {
-  add(numbers: [1,5,10,2])
+  add(numbers: [1, 5, 10, 2])
   grades
 }
 ```
+
 17. Working with Arrays: Part II
     22분
 
 ```javascript
 // index.js
 
-import {
-    GraphQLServer
-} from 'graphql-yoga'
+import { GraphQLServer } from "graphql-yoga";
 
 // Scalar types - String, Boolean, Int, Float, ID
 
 // Demo post data
 
-const posts = [{
-    id: '1',
-    title: 'GraphQL 101',
-    body: 'Hi, There!',
-    published: true
-}, {
-    id: '2',
-    title: 'GraphQL 201',
-    body: 'Good day, mate!',
-    published: true
-}, {
-    id: '3',
-    title: 'Where is the cookie?',
-    body: 'Oh my zsh!',
-    published: false
-}]
+const posts = [
+  {
+    id: "1",
+    title: "GraphQL 101",
+    body: "Hi, There!",
+    published: true,
+  },
+  {
+    id: "2",
+    title: "GraphQL 201",
+    body: "Good day, mate!",
+    published: true,
+  },
+  {
+    id: "3",
+    title: "Where is the cookie?",
+    body: "Oh my zsh!",
+    published: false,
+  },
+];
 
 // Demo user data
-const users = [{
-    id: '1',
-    name: 'Maph',
-    email: 'maph@example.com',
-    age: 19
-},{
-    id: '2',
-    name: 'Sarah',
-    email: 'sarah@example.com'
-},{
-    id: '3',
-    name: 'Mike',
-    email: 'mike@example.com'
-}]
+const users = [
+  {
+    id: "1",
+    name: "Maph",
+    email: "maph@example.com",
+    age: 19,
+  },
+  {
+    id: "2",
+    name: "Sarah",
+    email: "sarah@example.com",
+  },
+  {
+    id: "3",
+    name: "Mike",
+    email: "mike@example.com",
+  },
+];
 
 // Type definitions (schema)
 const typeDefs = `
@@ -498,60 +509,66 @@ const typeDefs = `
         body: String!
         published: Boolean!
     }
-`
+`;
 
 // Resolvers
 const resolvers = {
-    Query: {
-        users(parent, args, ctx, info) {
-            if (!args.query) {
-                return users
-            }
+  Query: {
+    users(parent, args, ctx, info) {
+      if (!args.query) {
+        return users;
+      }
 
-            return users.filter((user) => {
-                return user.name.toLowerCase().includes(args.query.toLowerCase())
-            })
-        },
-        posts(parent, args, ctx, info) {
-            if (!args.query) {
-                return posts
-            }
+      return users.filter((user) => {
+        return user.name.toLowerCase().includes(args.query.toLowerCase());
+      });
+    },
+    posts(parent, args, ctx, info) {
+      if (!args.query) {
+        return posts;
+      }
 
-            return posts.filter((post) => {
-                const isTitleMatch = post.title.toLowerCase().includes(args.query.toLowerCase())
-                const isBodyMatch = post.body.toLowerCase().includes(args.query.toLowerCase())
-                return isTitleMatch || isBodyMatch
-            })
-        },
-        me() {
-            return {
-                id:'1239884',
-                name: 'Mike',
-                email: 'mike@example.com',
-                age: 35
-            }
-        },
-        post() {
-            return {
-                id: '1234124',
-                title: 'Some title',
-                body: 'This is post',
-                published: true
-            }
-        }
-    }
-}
+      return posts.filter((post) => {
+        const isTitleMatch = post.title
+          .toLowerCase()
+          .includes(args.query.toLowerCase());
+        const isBodyMatch = post.body
+          .toLowerCase()
+          .includes(args.query.toLowerCase());
+        return isTitleMatch || isBodyMatch;
+      });
+    },
+    me() {
+      return {
+        id: "1239884",
+        name: "Mike",
+        email: "mike@example.com",
+        age: 35,
+      };
+    },
+    post() {
+      return {
+        id: "1234124",
+        title: "Some title",
+        body: "This is post",
+        published: true,
+      };
+    },
+  },
+};
 
 const server = new GraphQLServer({
-    typeDefs,
-    resolvers
-})
+  typeDefs,
+  resolvers,
+});
 
 server.start(() => {
-    console.log('The server is up!')
-})
+  console.log("The server is up!");
+});
 ```
+
 - Try on graphql playground
+
 ```graphql
 query {
   posts(query: "Graph") {
@@ -565,10 +582,10 @@ query {
 
 18. Relational Data: Basics
     15분
-![Image of Graphs](/images/Graphs.PNG)
+    ![Image of Graphs](/images/Graphs.PNG)
 
 ```JS
-// index.js 
+// index.js
 
 import {
     GraphQLServer
@@ -696,7 +713,9 @@ server.start(() => {
     console.log('The server is up!')
 })
 ```
+
 - Try on playground
+
 ```graphql
 query {
   posts(query: "Graph") {
@@ -711,6 +730,7 @@ query {
   }
 }
 ```
+
 19. Relational Data: Arrays
     6분
 
@@ -892,6 +912,7 @@ query {
   }
 }
 ```
+
 ## Section 3:GraphQL Basics: Mutations
 
 0 / 11|2시간 22분
@@ -1027,7 +1048,9 @@ server.start(() => {
     console.log('The server is up!')
 })
 ```
+
 - Try on graphql playground
+
 ```graphql
 mutation {
   createUser(name: "Maphnew", email: "goodguy@example.com", age: 20) {
@@ -1038,11 +1061,12 @@ mutation {
   }
 }
 ```
+
 25. Creating Data with Mutations: Part II
     20분
 
 - Add function createPost, createComment in Mutation typeDef
-- Add resolver 
+- Add resolver
 
 ```JS
 import {
@@ -1225,14 +1249,12 @@ server.start(() => {
     console.log('The server is up!')
 })
 ```
+
 - Try on playground
+
 ```graphql
 mutation {
-  createComment(
-    text: "TTTTTTText",
-    author: "10",
-    post: "1"
-  ) {
+  createComment(text: "TTTTTTText", author: "10", post: "1") {
     id
     text
     post {
@@ -1249,6 +1271,47 @@ mutation {
 
 26. The Object Spread Operator with Node.js
     7분
+
+- Install babel-plugin-transform-object-rest-spread
+
+```shell
+# npm install babel-plugin-transform-object-rest-spread
+```
+
+- Modify .babelrc
+
+```
+{
+    "presets": [
+        "env"
+    ],
+    "plugins": [
+        "transform-object-rest-spread"
+    ]
+}
+```
+
+- Modify objects like ...args
+
+> Before
+
+```JS
+            const user = {
+                id: uuidv4(),
+                name: args.name,
+                email: args.email,
+                age: args.age
+            }
+```
+
+> After
+
+```JS
+            const user = {
+                id: uuidv4(),
+                ...args
+            }
+```
 
 27. The Input Type
     13분

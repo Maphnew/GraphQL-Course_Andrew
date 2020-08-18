@@ -32,32 +32,32 @@ const users = [{
     name: 'Maph',
     email: 'maph@example.com',
     age: 19
-},{
+}, {
     id: '20',
     name: 'Sarah',
     email: 'sarah@example.com'
-},{
+}, {
     id: '30',
     name: 'Mike',
     email: 'mike@example.com'
 }]
 
-const comments =[{
+const comments = [{
     id: '101',
     text: 'A Comment!',
     author: '10',
     post: '1'
-},{
+}, {
     id: '102',
     text: 'B Comment~!',
     author: '20',
     post: '2'
-},{
+}, {
     id: '103',
     text: 'C Comment!!!',
     author: '30',
     post: '3'
-},{
+}, {
     id: '104',
     text: 'D Comment....',
     author: '20',
@@ -65,6 +65,7 @@ const comments =[{
 }]
 
 // Type definitions (schema)
+// Custom Types - User, Post
 const typeDefs = `
     type Query {
         users(query: String): [User!]!
@@ -134,7 +135,7 @@ const resolvers = {
         },
         me() {
             return {
-                id:'1239884',
+                id: '1239884',
                 name: 'Mike',
                 email: 'mike@example.com',
                 age: 35
@@ -159,9 +160,7 @@ const resolvers = {
 
             const user = {
                 id: uuidv4(),
-                name: args.name,
-                email: args.email,
-                age: args.age
+                ...args
             }
 
             users.push(user)
@@ -169,7 +168,7 @@ const resolvers = {
             return user
         },
         createPost(parent, args, ctx, info) {
-            const userExists = users.some((user) => user.id === args.author )
+            const userExists = users.some((user) => user.id === args.author)
 
             if (!userExists) {
                 throw new Error('User not found.')
@@ -177,10 +176,7 @@ const resolvers = {
 
             const post = {
                 id: uuidv4(),
-                title: args.title,
-                body: args.body,
-                published: args.published,
-                author: args.author
+                ...args
             }
 
             posts.push(post)
@@ -197,9 +193,7 @@ const resolvers = {
 
             const comment = {
                 id: uuidv4(),
-                text: args.text,
-                author: args.author,
-                post: args.post
+                ...args
             }
 
             comments.push(comment)
