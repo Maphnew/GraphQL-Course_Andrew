@@ -1316,6 +1316,173 @@ mutation {
 27. The Input Type
     13분
 
+```JS
+// index.js
+
+// Type definitions (schema)
+// Custom Types - User, Post
+const typeDefs = `
+    // ...
+
+    type Mutation {
+        createUser(data: CreateUserInput): User!
+        createPost(data: CreatePostInput): Post!
+        createComment(data: CreateCommentInput): Comment!
+    }
+
+    input CreateUserInput {
+        name: String!
+        email: String!
+        age: Int
+    }
+
+    input CreatePostInput {
+        title: String!
+        body: String!
+        published: Boolean!
+        author: ID!
+    }
+
+    input CreateCommentInput {
+        text: String!
+        author: ID!
+        post: ID!
+    }
+
+    // ...
+`
+
+// Resolvers
+const resolvers = {
+    // ...
+    Mutation: {
+        createUser(parent, args, ctx, info) {
+            const emailTaken = users.some((user) => user.email === args.data.email);
+
+            if (emailTaken) {
+                throw new Error('Email taken.')
+            }
+
+            const user = {
+                id: uuidv4(),
+                ...args.data
+            }
+
+            users.push(user)
+
+            return user
+        },
+        createPost(parent, args, ctx, info) {
+            const userExists = users.some((user) => user.id === args.data.author)
+
+            if (!userExists) {
+                throw new Error('User not found.')
+            }
+
+            const post = {
+                id: uuidv4(),
+                ...args.data
+            }
+
+            posts.push(post)
+
+            return post
+        },
+        createComment(parent, args, ctx, info) {
+            const userExists = users.some((user) => user.id === args.data.author)
+            const postPublished = posts.some((post) => post.id === args.data.post && post.published)
+
+            if (!userExists || !postPublished) {
+                throw new Error('Unable to find user and post')
+            }
+
+            const comment = {
+                id: uuidv4(),
+                ...args.data
+            }
+
+            comments.push(comment)
+
+            return comment
+        }
+    },
+    // ...
+}
+
+const server = new GraphQLServer({
+    typeDefs,
+    resolvers
+})
+
+server.start(() => {
+    console.log('The server is up!')
+})
+```
+- Test createUser
+```graphql
+mutation {
+  createUser(
+    data: {
+      name: "Jess",
+      email: "Jess@example.com",
+      age:38
+    }
+  ) {
+    id
+    name
+    email
+    age
+  }
+}
+
+```
+- Test createPost
+```graphql
+mutation {
+  createPost(
+    data: {
+      title: "My new post.",
+      body: "dfgsdfgsdfgsdfg",
+      published: true,
+      author: "10"
+    }
+  ) {
+    id
+    title
+    body
+    published
+    author {
+      name
+    }
+    comments {
+      id
+    }
+  }
+}
+```
+- Test createComment
+```graphql
+mutation {
+  createComment(
+    data: {
+      text: "TTTTTTText",
+      author: "10",
+      post: "1"
+    }
+  ) {
+    id
+    text
+    post {
+      id
+      published
+    }
+    author {
+      id
+      name
+    }
+  }
+}
+```
 28. Deleting Data with Mutations: Part
     I
     17분
