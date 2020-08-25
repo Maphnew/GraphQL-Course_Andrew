@@ -1622,12 +1622,78 @@ const resolvers = {
 ```
 
 
-30. A Pro GraphQL Project Structure:
-    Part I
+30. A Pro GraphQL Project Structure: Part I
     17분
 
-31. A Pro GraphQL Project Structure:
-    Part II
+- Create schema.graphql AND cut and paste the type from index.js
+```graphql
+# schema.graphql
+
+type Query {
+  users(query: String): [User!]!
+  posts(query: String): [Post!]!
+  me: User!
+  post: Post!
+  comments: [Comment!]!
+}
+
+# ...
+
+type Comment {
+  id: ID!
+  text: String!
+  author: User!
+  post: Post!
+}
+
+```
+
+- Import graphql
+```JS
+const server = new GraphQLServer({
+    typeDefs: './src/schema.graphql',
+    resolvers
+})
+```
+
+- Context
+
+- Create db.js
+- Put the Array to db.js from index.js
+- Import db
+```JS
+const server = new GraphQLServer({
+    typeDefs: './src/schema.graphql',
+    resolvers,
+    context: {
+        db
+    }
+})
+```
+- And Change ctx to { db } and users to db.users, posts to db.posts, comments to db.comments
+```JS
+// Example
+// index.js
+// ...
+
+    Comment: {
+        author(parent, args, { db }, info) {
+            return db.users.find((user) => {
+                return user.id === parent.author
+            })
+        },
+        post(parent, args, { db }, info) {
+            return db.posts.find((post) => {
+                return post.id === parent.post
+            })
+        }
+    }
+
+// ...
+```
+
+
+31. A Pro GraphQL Project Structure: Part II
     9분
 
 32. Updating Data with Mutations:
