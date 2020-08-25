@@ -1696,12 +1696,45 @@ const server = new GraphQLServer({
 31. A Pro GraphQL Project Structure: Part II
     9분
 
-32. Updating Data with Mutations:
-    Part I
+- Create Query, Mutation, User, Post, Comment in resolvers folder
+- Put the all of resolvers to those resolvers
+
+```JS
+// index.js
+
+import {
+    GraphQLServer
+} from 'graphql-yoga'
+import db from './db'
+import Query from './resolvers/Query'
+import Mutation from './resolvers/Mutation'
+import User from './resolvers/User'
+import Post from './resolvers/Post'
+import Comment from './resolvers/Comment'
+
+const server = new GraphQLServer({
+    typeDefs: './src/schema.graphql',
+    resolvers: {
+        Query,
+        Mutation,
+        User,
+        Post,
+        Comment
+    },
+    context: {
+        db
+    }
+})
+
+server.start(() => {
+    console.log('The server is up!')
+})
+```
+
+32. Updating Data with Mutations: Part I
     12분
 
-33. Updating Data with Mutations:
-    Part II
+33. Updating Data with Mutations: Part II
     16분
 
 ## Section 4:GraphQL Basics:
