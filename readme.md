@@ -1796,6 +1796,84 @@ mutation {
 ```
 33. Updating Data with Mutations: Part II
     16분
+- Add "updatePost", "updateComment" type
+```graphql
+# ...
+type Mutation {
+  createUser(data: CreateUserInput): User!
+  deleteUser(id: ID!): User!
+  updateUser(id: ID!, data: UpdateUserInput!): User!
+  createPost(data: CreatePostInput): Post!
+  deletePost(id: ID!): Post!
+  updatePost(id: ID!, data: UpdatePostInput!): Post!
+  createComment(data: CreateCommentInput): Comment!
+  deleteComment(id: ID!): Comment!
+  updateComment(id: ID!, data: UpdateCommentInput!): Comment!
+}
+# ...
+```
+- Update "updatePost", "updateComment" resolvers in Mutation.js 
+```JS
+// ...
+updatePost(parent, args, {db}, info){
+        const {id, data} = args
+        const post = db.posts.find((post) => post.id === id)
+
+        if (!post) {
+            throw new Error('Post not found')
+        }
+
+        if (typeof data.title === 'string') {
+            post.title = data.title
+        }
+
+        if (typeof data.body === 'string') {
+            post.body = data.body
+        }
+
+        if (typeof data.published === 'boolean') {
+            post.published = data.published
+        }
+
+        return post
+    },
+// ...
+updateComment(parent, args, {db}, info) {
+        const { id, data } = args
+        const comment = db.comments.find((comment) => comment.id === id)
+
+        if (!comment) {
+            throw new Error('Comment not found')
+        }
+
+        if (typeof data.text === 'string') {
+            comment.text = data.text
+        }
+
+        return comment
+    }
+// ...
+```
+
+- Test on playground
+```graphql
+# Test updatePost
+mutation {
+  updatePost(id:1, data: {published:false}) {
+    title
+    body
+    published
+  }
+}
+
+# Test updateComment
+mutation {
+  updateComment (id:"101", data:{text: "This !"}) {
+    id
+    text
+  }
+}
+```
 
 ## Section 4:GraphQL Basics:
 
