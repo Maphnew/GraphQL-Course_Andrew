@@ -1875,17 +1875,89 @@ mutation {
 }
 ```
 
-## Section 4:GraphQL Basics:
-
-Subscriptions
+## Section 4:GraphQL Basics: Subscriptions
 0 / 7|1시간 13분
 
-34. Section Intro: GraphQL Basics:
-    Subscriptions
+34. Section Intro: GraphQL Basics: Subscriptions
     1분
 
 35. GraphQL Subscription Basics
     15분
+
+- REF: https://github.com/apollographql/graphql-subscriptions
+- Import PubSub
+- Create a instance
+- Put it in the context
+
+```JS
+// index.js
+
+import {
+    GraphQLServer,
+    PubSub
+} from 'graphql-yoga'
+import db from './db'
+import Query from './resolvers/Query'
+import Mutation from './resolvers/Mutation'
+import Subscription from './resolvers/Subscription'
+import User from './resolvers/User'
+import Post from './resolvers/Post'
+import Comment from './resolvers/Comment'
+
+const pubsub = new PubSub()
+
+const server = new GraphQLServer({
+    typeDefs: './src/schema.graphql',
+    resolvers: {
+        Query,
+        Mutation,
+        Subscription,
+        User,
+        Post,
+        Comment
+    },
+    context: {
+        db,
+        pubsub
+    }
+})
+
+server.start(() => {
+    console.log('The server is up!')
+})
+```
+- Create Subscription.js
+```JS
+// resolvers/Subscription.js
+
+const Subscription = {
+    count: {
+        subscribe(parent, args, {pubsub}, info) {
+            let count = 0
+
+            setInterval(() => {
+                count++
+                pubsub.publish('count', {
+                    count
+                })
+            }, 1000)
+
+            return pubsub.asyncIterator('count')
+        }
+    }
+}
+
+export { Subscription as default }
+```
+- Create a type Subscription
+```graphql
+# src/schema.graphql
+# ...
+type Subscription {
+  count: Int!
+}
+# ...
+```
 
 36. Setting up a Comments
     Subscription
