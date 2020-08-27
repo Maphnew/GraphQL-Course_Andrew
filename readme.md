@@ -1959,19 +1959,80 @@ type Subscription {
 # ...
 ```
 
-36. Setting up a Comments
-    Subscription
+36. Setting up a Comments Subscription
     11분
 
+- Add resolver comment
+
+```JS
+// resolvers/Subscription.js
+// ...
+comment: {
+        subscribe(parent, {postId}, {db, pubsub}, info){
+            const post = db.posts.find((post) => post.id === postId && post.published)
+
+            if(!post) {
+                throw new Error('Post not found')
+            }
+
+            return pubsub.asyncIterator(`comment ${postId}`)
+        }
+    }
+// ...
+```
+- Add comment
+```graphql
+# schema.graphql
+type Subscription {
+  count: Int!
+  comment(postId: ID!): Comment!
+}
+
+```
+- Add pubsub and publish it
+```JS
+// resolver/Mutation.js
+
+    createComment(parent, args, {db, pubsub}, info) {
+        const userExists = db.users.some((user) => user.id === args.data.author)
+        const postPublished = db.posts.some((post) => post.id === args.data.post && post.published)
+
+        if (!userExists || !postPublished) {
+            throw new Error('Unable to find user and post')
+        }
+
+        const comment = {
+            id: uuidv4(),
+            ...args.data
+        }
+
+        db.comments.push(comment)
+        pubsub.publish(`comment ${args.data.post}`, {comment})
+
+        return comment
+    }
+```
+
+- Test on playground
+```graphql
+subscription {
+  comment(postId:"1"){
+    id
+    text
+    author{
+      id
+      name
+    }
+  }
+}
+```
 37. Setting up a Posts Subscription
     8분
 
-38. Expanding the Posts Subscription
-    for Edits and Deletions
+38. Expanding the Posts Subscription for Edits and Deletions
     20분
 
-39. Expanding the Comments
-    Subscription for Edits and Deletions
+39. Expanding the Comments Subscription for Edits and Deletions
     10분
 
 40. Enums
@@ -1982,8 +2043,7 @@ type Subscription {
 Prisma v1
 0 / 17|3시간 54분
 
-41. Section Intro: Database Storage
-    with Prisma
+41. Section Intro: Database Storage with Prisma
     1분
 
 42. What is Prisma?
@@ -2010,8 +2070,7 @@ Prisma v1
 49. Adding Comment Type to Prisma
     12분
 
-50. Integrating Prisma into a Node.js
-    Project
+50. Integrating Prisma into a Node.js Project
     17분
 
 51. Using Prisma Bindings
@@ -2020,23 +2079,19 @@ Prisma v1
 52. Mutations with Prisma Bindings
     15분
 
-53. Using Async/Await with Prisma
-    Bindings
+53. Using Async/Await with Prisma Bindings
     18분
 
-54. Checking If Data Exists Using
-    Prisma Bindings
+54. Checking If Data Exists Using Prisma Bindings
     15분
 
 55. Customizing Type Relationships
     13분
 
-56. Modeling a Review System with
-    Prisma: Set Up
+56. Modeling a Review System with Prisma: Set Up
     11분
 
-57. Modeling a Review System with
-    Prisma: Solution
+57. Modeling a Review System with Prisma: Solution
     17분
 
 ## Section 6:Authentication with
@@ -2044,8 +2099,7 @@ Prisma v1
 GraphQL
 0 / 24|5시간 14분
 
-58. Section Intro: Authentication with
-    GraphQL
+58. Section Intro: Authentication with GraphQL
     1분
 
 59. Adding Prisma into GraphQL
