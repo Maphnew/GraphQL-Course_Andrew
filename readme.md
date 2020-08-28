@@ -2029,6 +2029,53 @@ subscription {
 37. Setting up a Posts Subscription
     8분
 
+- Set post subscription
+```graphql
+# schema.graphql
+# ...
+type Subscription {
+  comment(postId: ID!): Comment!
+  post: Post!
+}
+# ...
+```
+
+- Add resolver
+```JS
+// resolvers/Subscription.js
+// ...
+    post: {
+        subscribe(paren, args, {pubsub}, info){
+            return pubsub.asyncIterator(`post`)
+        }
+    }
+// ...
+```
+- Modify createPost mutation
+```JS
+// Mutation.js
+
+    createPost(parent, args, {db, pubsub}, info) {
+        const userExists = db.users.some((user) => user.id === args.data.author)
+
+        if (!userExists) {
+            throw new Error('User not found.')
+        }
+
+        const post = {
+            id: uuidv4(),
+            ...args.data
+        }
+
+        db.posts.push(post)
+
+        if(args.data.published){
+            pubsub.publish('post', {post})
+        }
+
+        return post
+    }
+```
 38. Expanding the Posts Subscription for Edits and Deletions
     20분
 
