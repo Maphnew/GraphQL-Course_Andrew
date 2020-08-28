@@ -2079,6 +2079,128 @@ type Subscription {
 38. Expanding the Posts Subscription for Edits and Deletions
     20분
 
+- Modify post
+```graphql
+# schema.graphql
+# ...
+type Subscription {
+  comment(postId: ID!): Comment!
+  post: PostSubscriptionPayload!
+}
+# ...
+type PostSubscriptionPayload {
+  mutation: String!
+  data: Post!
+}
+```
+- Modify resolver
+```JS
+// ...
+    post: {
+        subscribe(paren, args, {pubsub}, info){
+            return pubsub.asyncIterator(`post`)
+        }
+    }
+// ...
+```
+- Modify updatePost resolver and many conditions
+```JS
+updatePost(parent, args, {db,pubsub}, info){
+        const {id, data} = args
+        const post = db.posts.find((post) => post.id === id)
+        const originalPost = { ...post }
+
+        if (!post) {
+            throw new Error('Post not found')
+        }
+
+        if (typeof data.title === 'string') {
+            post.title = data.title
+        }
+
+        if (typeof data.body === 'string') {
+            post.body = data.body
+        }
+
+        if (typeof data.published === 'boolean') {
+            post.published = data.published
+
+            if (originalPost.published && !post.published) {
+                pubsub.publish('post', {
+                    post: {
+                        mutation: 'DELETED',
+                        data: originalPost
+                    }
+                })
+            } else if (!originalPost.published && post.published) {
+                pubsub.publish('post', {
+                    post: {
+                        mutation: 'CREATED',
+                        data: post
+                    }
+                })
+            }
+        } else if (post.published) {
+            pubsub.publish('post', {
+                post: {
+                    mutation: 'UPDATED',
+                    data: post
+                }
+            })
+        }
+
+        return post
+    }
+```
+- Test on playground
+```graphql
+# subscription
+subscription {
+  post{
+		mutation
+    data {
+      id
+      title
+      body
+      author {
+        id
+        name
+      }
+    }
+  }
+}
+```
+```graphql
+# updatePost - create
+mutation {
+  updatePost(id:3, data: {published:true}) {
+    title
+    body
+    published
+  }
+}
+```
+```graphql
+# updatePost - update
+mutation {
+  updatePost(id:3, data: {published:false}) {
+    title
+    body
+    published
+  }
+}
+```
+```graphql
+# updatePost - update
+mutation {
+  updatePost(id:3, data: {body:" Something new... "}) {
+    title
+    body
+    published
+  }
+}
+```
+
 39. Expanding the Comments Subscription for Edits and Deletions
     10분
 
