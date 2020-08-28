@@ -2203,9 +2203,161 @@ mutation {
 
 39. Expanding the Comments Subscription for Edits and Deletions
     10분
+- Creat SubscriptionPayload
+```graphql
+# schema.graphql
+#...
+type Subscription {
+  comment(postId: ID!): CommentSubscriptionPayload!
+  post: PostSubscriptionPayload!
+}
+# ...
+type CommentSubscriptionPayload {
+  mutation: String!
+  data: Comment!
+}
+```
+- Modify resolvers
+```JS
+// Mutation.js
+createComment(parent, args, {db, pubsub}, info) {
+        const userExists = db.users.some((user) => user.id === args.data.author)
+        const postPublished = db.posts.some((post) => post.id === args.data.post && post.published)
 
+        if (!userExists || !postPublished) {
+            throw new Error('Unable to find user and post')
+        }
+
+        const comment = {
+            id: uuidv4(),
+            ...args.data
+        }
+
+        db.comments.push(comment)
+        pubsub.publish(`comment ${args.data.post}`, {
+            comment: {
+                mutation: 'CREATED',
+                data: comment
+            }
+        })
+
+        return comment
+    },
+    deleteComment(parent, args, {db, pubsub}, info) {
+        const commentIndex = db.comments.findIndex((comment) => comment.id === args.id)
+
+        if (commentIndex === -1) {
+            throw new Error('Comment not found')
+        }
+
+        const [deletedComment] = db.comments.splice(commentIndex, 1)
+
+        pubsub.publish(`comment ${deletedComment.post}`, {
+            comment: {
+                mutation: 'DELETED',
+                data: deletedComment
+            }
+        })
+
+
+        return deletedComment
+    },
+    updateComment(parent, args, {db, pubsub}, info) {
+        const { id, data } = args
+        const comment = db.comments.find((comment) => comment.id === id)
+
+        if (!comment) {
+            throw new Error('Comment not found')
+        }
+
+        if (typeof data.text === 'string') {
+            comment.text = data.text
+        }
+
+        pubsub.publish(`comment ${comment.post}`, {
+            comment: {
+                mutation: 'UPDATED',
+                data: comment
+            }
+        })
+
+        return comment
+    }
+```
+- Test your work
+```graphql
+subscription {
+  comment(postId:"1") {
+    mutation
+    data {
+      id
+      text
+      author{
+        id
+        name
+      }
+    }
+  }
+}
+```
+- createComment
+```graphql
+mutation {
+  createComment(data:{
+    text: "My new comment",
+    author:"10",
+    post: "1"
+  }) {
+    id
+    text
+  }
+}
+```
+- updateComment
+```graphql
+mutation {
+  updateComment(
+    id:"6052739a-0bc6-4340-8b8d-6822f296ccf7",
+    data:{
+      text:"This did not work"
+    }
+  ){
+    id
+    text
+  }
+}
+```
+- deleteComment
+```graphql
+mutation {
+  deleteComment(
+    id:"6052739a-0bc6-4340-8b8d-6822f296ccf7"
+  ){
+    id
+    text
+  }
+}
+```
 40. Enums
     9분
+- Set enum for mutation type
+```graphql
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+type PostSubscriptionPayload {
+  mutation: MutationType!
+  data: Post!
+}
+
+type CommentSubscriptionPayload {
+  mutation: MutationType!
+  data: Comment!
+}
+```
 
 ## Section 5:Database Storage with
 
