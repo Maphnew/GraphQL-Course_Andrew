@@ -2376,6 +2376,11 @@ Prisma v1
 44. Prisma Windows Setup
     15분
 
+- Set Heroku postgreSQL server(free)
+- Download and install and launch pgAdmin
+- Add Heroku PG on pgAdmin with infomation about the db server
+- Install docker toolbox
+
 45. Prisma Ubuntu Setup
     17분
 
