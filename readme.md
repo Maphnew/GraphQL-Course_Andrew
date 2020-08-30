@@ -2381,11 +2381,63 @@ Prisma v1
 - Add Heroku PG on pgAdmin with infomation about the db server
 - Install docker toolbox
 
+> REF for applying: https://docs.docker.com/docker-for-windows/wsl/
+```shell
+wsl --set-version Ubuntu 2
+```
+
 45. Prisma Ubuntu Setup
     17분
 
 46. Prisma 101
     17분
+
+- Install prisma npm
+- Create a folder 'graphql-prisma'
+- Init prisma at the folder
+```shell
+> npm i -g prisma@1.34.10
+> prisma -v
+> prisma init prisma
+Use existing DB
+PostgreSQL
+No data
+host
+port
+user
+password
+database name
+ssl Y
+Do not generate client
+```
+```shell
+cd prisma
+docker-compose up -d
+prisma deploy
+```
+```
+Creating stage default for service default ✔
+Deploying service `default` to stage `default` to server `local` 17.6s
+
+Changes:
+
+  User (Type)
+  + Created type `User`
+  + Created field `id` of type `ID!`
+  + Created field `name` of type `String!`
+
+Applying changes 74.9s
+
+Your Prisma endpoint is live:
+
+  HTTP:  http://localhost:4466
+  WS:    ws://localhost:4466
+
+You can view & edit your data here:
+
+  Prisma Admin: http://localhost:4466/_admin
+```
+- Visit localhost:4466
 
 47. Exploring the Prisma GraphQL API
     13분
