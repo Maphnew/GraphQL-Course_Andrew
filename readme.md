@@ -2516,8 +2516,155 @@ mutation {
 48. Add Post type to Prisma
     18분
 
+- Modify datamodel
+```graphql
+# datamodel.prisma
+
+type User {
+  id: ID! @id
+  name: String!
+  email: String! @unique
+  posts: [Post!]!
+}
+
+type Post {
+  id: ID! @id
+  title: String!
+  body: String!
+  published: Boolean!
+  author: User!
+}
+```
+
+- deploy
+```shell
+> prisma deploy
+```
+- Test
+- CreatePost
+```graphql
+mutation {
+  createPost(
+    data:{
+      title: "Prisma Post",
+      body: "",
+      published: false,
+      author: {
+        connect: {
+          id: "ckemteglg00j30773ltubj6g5"
+        }
+      }
+    }
+  ){
+    id
+    title
+    body
+    published
+    author{
+      id
+      name
+    }
+  }
+}
+```
+
 49. Adding Comment Type to Prisma
     12분
+
+- Edit datamodel
+```graphql
+# datamodel.prisma
+type Comment {
+  id: ID! @id
+  text: String!
+  author: User!
+  post: Post!
+}
+```
+- deploy
+```shell
+> prisma deploy
+```
+- Test
+- Update only post to be published
+```graphql
+mutation{
+  updatePost(data:{
+    published: true
+  }
+  where:{
+    id:"ckemudh6c01130773uibl2bu4"
+  }){
+    id
+    title
+    body
+    published
+    author{
+      id
+      name
+    }
+  }
+}
+```
+- Create a new user
+```graphql
+mutation {
+  createUser(
+    data: {
+      name: "Maphnew",
+      email: "Maphnew@example.com"
+    }
+  ) {
+    id
+    name
+    email
+  }
+}
+```
+- Have new user comment on the one existing post
+```graphql
+mutation{
+  createComment(
+    data:{
+      text: "comment!"
+      author: {
+        connect: {
+          id: "ckemussou014h0773crf3r1k2"
+        }
+      }
+      post: {
+        connect: {
+          id: "ckemudh6c01130773uibl2bu4"
+        }
+      }
+    }
+  ){
+    id
+    text
+    author{
+      name
+    }
+    post{
+      title
+    }
+  }
+}
+```
+- Fetch all comments
+```graphql
+query {
+  comments {
+    id
+    text
+    author{
+      name
+    }
+    post{
+      title
+    }
+  }
+}
+```
 
 50. Integrating Prisma into a Node.js Project
     17분
