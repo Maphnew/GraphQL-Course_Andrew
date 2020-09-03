@@ -2441,7 +2441,78 @@ You can view & edit your data here:
 
 47. Exploring the Prisma GraphQL API
     13분
+- Test on loacalhost:4466
+```graphql
+mutation {
+  createUser(
+    data: {
+      name: "Maphnew Kim"
+    }
+  ) {
+    id
+    name
+  }
+}
+```
+- Output
+```json
+{
+  "data": {
+    "createUser": {
+      "id": "ckemrwo2b002o0773eyr5xplw",
+      "name": "Maphnew Kim"
+    }
+  }
+}
+```
 
+- Check pgAdmin database > schemas > default$default > Tables > User : Right Click > View/Edit data > All Rows
+
+- Query users
+```graphql
+
+query {
+  users {
+    id
+    name
+  }
+}
+
+```
+
+- updateUser
+
+```graphql
+
+mutation {
+  updateUser(
+    where: {
+      id: "ckemrwo2b002o0773eyr5xplw"
+    },
+    data: {
+      name: "Maphnew"
+    }
+  ) {
+    id
+    name
+  }
+}
+
+```
+
+- deleteUser
+```graphql
+
+mutation {
+  deleteUser(where:{
+    id: "ckems93rn005f0773xaaudg1z"
+  }) {
+    id
+    name
+  }
+}
+
+```
 48. Add Post type to Prisma
     18분
 
