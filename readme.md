@@ -2669,6 +2669,56 @@ query {
 50. Integrating Prisma into a Node.js Project
     17분
 
+- COPY all of the files in graphql-basics folder to inside of graphql-prisma
+- Install prisma-binding
+```shell
+graphql-prisma$ npm i prisma-binding@2.3.16
+```
+- Create src/prisma.js
+```JS
+import { Prisma } from 'prisma-binding'
+
+const prisma = new Prisma({
+    typeDefs: 'src/generated/prisma.graphql',
+    endpoint: 'localhost:4466'
+})
+```
+- Install graphql-cli@2.16.4
+- Version matters
+- Create graphql-prisma/.graphqlconfig
+- See it like JOSN file (VS Code - View - Command Palette - Change Language Mode - JSON)
+- Create a folder src/generated/
+```JSON
+// graphql-prisma/.graphqlconfig
+{
+    "projects": {
+        "prisma": {
+            "schemaPath": "src/generated/prisma.graphql",
+            "extensions": {
+                "endpoints": {
+                    "default": "http://localhost:4466"
+                }
+            }
+        }
+    }
+}
+```
+- Add a command on package.json
+```JSON
+// package.json
+
+  "scripts": {
+// ...
+    "get-schema": "graphql get-schema -p prisma"
+  },
+
+```
+- Run it
+```shell
+graphql-prisma& npm run get-schema
+```
+- Check in the generated folder(prisma.graphql file)
+
 51. Using Prisma Bindings
     13분
 
