@@ -2721,7 +2721,106 @@ graphql-prisma& npm run get-schema
 
 51. Using Prisma Bindings
     13분
+- Add Prisma Bindings
+```JS
+// prisma.js
 
+import { Prisma } from 'prisma-binding'
+
+const prisma = new Prisma({
+    typeDefs: 'src/generated/prisma.graphql',
+    endpoint: 'http://localhost:4466'
+})
+
+// prisma.query prisma.mutation prisma.subscription prisma.exists
+
+prisma.query.users(null, '{ id name email posts {id title}}').then((data) => {
+    console.log(JSON.stringify(data, undefined, 2))
+})
+
+prisma.query.comments(null, '{id text author {id name}}').then((data) => {
+    console.log(JSON.stringify(data, undefined, 2))
+})
+```
+- Import prisma.js
+```JS
+// index.js
+import {
+    GraphQLServer,
+    PubSub
+} from 'graphql-yoga'
+import db from './db'
+import Query from './resolvers/Query'
+import Mutation from './resolvers/Mutation'
+import Subscription from './resolvers/Subscription'
+import User from './resolvers/User'
+import Post from './resolvers/Post'
+import Comment from './resolvers/Comment'
+import './prisma'
+
+const pubsub = new PubSub()
+
+const server = new GraphQLServer({
+    typeDefs: './src/schema.graphql',
+    resolvers: {
+        Query,
+        Mutation,
+        Subscription,
+        User,
+        Post,
+        Comment
+    },
+    context: {
+        db,
+        pubsub
+    }
+})
+
+server.start(() => {
+    console.log('The server is up!')
+})
+```
+- RUN
+```shell
+npm start
+```
+```shell
+[
+  {
+    "id": "ckemteglg00j30773ltubj6g5",
+    "name": "Beackam",
+    "email": "Beackam@example.com",
+    "posts": [
+      {
+        "id": "ckemudh6c01130773uibl2bu4",
+        "title": "Prisma Post"
+      }
+    ]
+  },
+  {
+    "id": "ckemtu6ea00p50773ve3c5zin",
+    "name": "Beackam",
+    "email": "Beackam2@example.com",
+    "posts": []
+  },
+  {
+    "id": "ckemussou014h0773crf3r1k2",
+    "name": "Maphnew",
+    "email": "Maphnew@example.com",
+    "posts": []
+  }
+]
+[
+  {
+    "id": "ckemv0bqx019j0773h62oi84b",
+    "text": "comment!",
+    "author": {
+      "id": "ckemussou014h0773crf3r1k2",
+      "name": "Maphnew"
+    }
+  }
+]
+```
 52. Mutations with Prisma Bindings
     15분
 
