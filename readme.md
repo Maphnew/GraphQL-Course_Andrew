@@ -2686,7 +2686,7 @@ const prisma = new Prisma({
 - Install graphql-cli@2.16.4
 - Version matters
 - Create graphql-prisma/.graphqlconfig
-- See it like JOSN file (VS Code - View - Command Palette - Change Language Mode - JSON)
+- Switch the code looks like JSON file (VS Code - View - Command Palette - Change Language Mode - JSON)
 - Create a folder src/generated/
 ```JSON
 // graphql-prisma/.graphqlconfig
@@ -2823,6 +2823,58 @@ npm start
 ```
 52. Mutations with Prisma Bindings
     15분
+
+```javascript
+// prisma.js
+
+// prisma.mutation.createPost({
+//     data: {
+//         title: "GraphQL 101",
+//         body: "",
+//         published: false,
+//         author: {
+//             connect: {
+//                 id: "ckemussou014h0773crf3r1k2",
+//             }
+//         }
+//     }
+// }, '{ id title body published }').then((data) => {
+//     console.log(data)
+//     return prisma.query.users(null, '{ id name posts { id title } }')
+// }).then((data) => {
+//     console.log(JSON.stringify(data, undefined, 2))
+// })
+
+prisma.mutation.updatePost({
+    where: {
+        id: "ckfuw4tet000d07731lrjib9o"
+    },
+    data: {
+        body: "This is ...",
+        published: true
+    }
+}, '{ id }').then((data) => {
+    return prisma.query.posts(null, '{ id, title, body, published }')
+}).then((data) => {
+    console.log(data)
+})
+```
+
+```shell
+The server is up!
+[ { id: 'ckemudh6c01130773uibl2bu4',
+    title: 'Prisma Post',
+    body: '',
+    published: true },
+  { id: 'ckfuvzsct00060773mn0exs1b',
+    title: 'My new GraphQL post is live!!',
+    body: 'You can find !',
+    published: true },
+  { id: 'ckfuw4tet000d07731lrjib9o',
+    title: 'GraphQL 101',
+    body: 'This is ...',
+    published: true } ]
+```
 
 53. Using Async/Await with Prisma Bindings
     18분
