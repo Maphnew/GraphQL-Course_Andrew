@@ -2878,7 +2878,59 @@ The server is up!
 
 53. Using Async/Await with Prisma Bindings
     18분
+```JS
+// 1. Create a new post
+// 2. Fetch all of the info about the user (author)
 
+const createPostForUser = async (authorId, data) => {
+    const post = await prisma.mutation.createPost({
+        data: {
+            ...data,
+            author: {
+                connect: {
+                    id: authorId
+                }
+            }
+        }
+    }, '{ id }')
+    const user = await prisma.query.user({
+        where: {
+            id: authorId
+        }
+    }, '{ id name email post { id title published } }')
+    return user
+}
+
+createPostForUser('ckemtu6ea00p50773ve3c5zin', {
+    title: 'Great Books to Read',
+    body: 'The war of art',
+    published: true
+}).then((user) => {
+    console.log(user)
+    console.log(JSON.stringify(user, undefined, 2))
+})
+```
+
+```JS
+const updatePostForUser = async (postId, data) => {
+    const post = await prisma.mutation.updatePost({
+        where: {
+            id: postId
+        },
+        data
+    }, '{ author { id } }')
+    const user = await prisma.query.user({
+        where: {
+            id: post.author.id
+        }
+    }, '{ id name email posts { id title published } }')
+    return user
+}
+
+updatePostForUser("ckfwn1nif000h0773qupjev5s", { published: false }).then((user) => {
+    console.log(JSON.stringify(user, undefined, 2))
+})
+```
 54. Checking If Data Exists Using Prisma Bindings
     15분
 
