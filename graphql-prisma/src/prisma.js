@@ -7,10 +7,24 @@ const prisma = new Prisma({
 
 // prisma.query prisma.mutation prisma.subscription prisma.exists
 
-// 1. Create a new post
-// 2. Fetch all of the info about the user (author)
+// prisma.exists.Comment({
+//     id: "ckemv0bqx019j0773h62oi84b",
+//     author: {
+//         id: "ckemussou014h0773crf3r1k2"
+//     }
+// }).then((exists) => {
+//     console.log(exists)
+// })
 
 const createPostForUser = async (authorId, data) => {
+    const userExists = await prisma.exists.User({
+        id: authorId
+    })
+
+    if (!userExists) {
+        throw new Error('User not found')
+    }
+
     const post = await prisma.mutation.createPost({
         data: {
             ...data,
@@ -20,42 +34,46 @@ const createPostForUser = async (authorId, data) => {
                 }
             }
         }
-    }, '{ id }')
-    const user = await prisma.query.user({
-        where: {
-            id: authorId
-        }
-    }, '{ id name email post { id title published } }')
-    return user
+    }, '{ author { id name email posts { id title published } } }')
+
+    return post.author
 }
 
-// createPostForUser('ckemtu6ea00p50773ve3c5zin', {
+// createPostForUser('ckemussou014h0773crf3r1k2', {
 //     title: 'Great Books to Read',
 //     body: 'The war of art',
 //     published: true
 // }).then((user) => {
 //     console.log(user)
 //     console.log(JSON.stringify(user, undefined, 2))
+// }).catch((error) => {
+//     console.log(error.message)
 // })
 
+
+
 const updatePostForUser = async (postId, data) => {
+    const postExists = await prisma.exists.Post({ id: postId })
+
+    if (!postExists) {
+        throw new Error('Post not found')
+    }
+
     const post = await prisma.mutation.updatePost({
         where: {
             id: postId
         },
         data
-    }, '{ author { id } }')
-    const user = await prisma.query.user({
-        where: {
-            id: post.author.id
-        }
-    }, '{ id name email posts { id title published } }')
-    return user
+    }, '{ author { id name email posts { id title published } } }')
+
+    return post.author
 }
 
-// updatePostForUser("ckfwn1nif000h0773qupjev5s", { published: false }).then((user) => {
-//     console.log(JSON.stringify(user, undefined, 2))
-// })
+updatePostForUser("ckfwn1nif000h0773qupjev5s", { published: true }).then((user) => {
+    console.log(JSON.stringify(user, undefined, 2))
+}).catch((error) => {
+    console.log(error.message)
+})
 
 // prisma.mutation.updatePost({
 //     where: {
